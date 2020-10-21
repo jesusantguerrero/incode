@@ -26,15 +26,14 @@ test('register', async (t) => {
     password: config.password,
     verify_password: config.password,
     default_company: "incode"
-  }).catch(err => {
-    return { error: err.response.data.errors.message}
-
   })
 
-    if (!loginData.error) {
-      t.is(typeof loginData.token, 'string');
-    } else {
+  console.log(typeof loginData)
+
+    if (loginData && loginData.error) {
       t.is( loginData.error, "Users This email already has an account.")
+    } else {
+      t.is(typeof loginData.token, 'string');
   }
 
 })

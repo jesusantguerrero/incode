@@ -22,6 +22,10 @@ type LoginData = {
   id: number
 }
 
+type KanvasError = {
+  error: string
+}
+
 export class Auth {
   endpoint: string;
   appKey: string;
@@ -48,7 +52,7 @@ export class Auth {
     })
   }
 
-  signup(formData: UserForm): Promise<LoginData> {
+  signup(formData: UserForm): Promise<LoginData | KanvasError> {
     const form = qs.stringify(formData);
 
     return this.$http({
@@ -60,6 +64,9 @@ export class Auth {
       data: form
     }).then(({data}) => {
       return data
+    }).catch(err => {
+      const error: KanvasError = { error: err.response.data.errors.message}
+      return error
     })
   }
 
