@@ -3,7 +3,7 @@ import test from 'ava';
 
 import config from "../../config";
 
-import { Auth } from './auth';
+import { Auth, KanvasError } from './auth';
 let auth: Auth;
 
 test.beforeEach(() => {
@@ -28,9 +28,7 @@ test('register', async (t) => {
     default_company: "incode"
   })
 
-  console.log(typeof loginData)
-
-    if (loginData && loginData.error) {
+    if (loginData && loginData.error != null) {
       t.is( loginData.error, "Users This email already has an account.")
     } else {
       t.is(typeof loginData.token, 'string');

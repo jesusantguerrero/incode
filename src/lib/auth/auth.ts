@@ -22,7 +22,7 @@ type LoginData = {
   id: number
 }
 
-type KanvasError = {
+export type KanvasError = {
   error: string
 }
 
