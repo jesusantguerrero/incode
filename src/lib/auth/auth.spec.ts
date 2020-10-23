@@ -1,22 +1,36 @@
 /* eslint-disable functional/no-let */
 import test from 'ava';
 
-import config from "../../config";
+import config from '../../config';
 
-import { Auth, KanvasError } from './auth';
+import { Auth } from './auth';
 let auth: Auth;
+let token: string;
 
-test.beforeEach(() => {
-  auth = new Auth(config.endpoint, config.apikey);
-})
-
-test('login', async (t) => {
-  const loginData = await auth.login(config.user, config.password).catch(err => {
-    console.log(err.statusText)
-  })
-
-  t.is(loginData && typeof loginData.token, 'string');
+test.before(async () => {
+  auth = new Auth({
+    endpoint: config.apps.GEWAER_API,
+    appKey: config.apikey,
+  });
+  const client = await auth.login(config.user, config.password);
+  if (client.user) {
+    token = client.token
+  }
 });
+
+test('login user', async (t) => {
+  const client = await auth.login(config.user, config.password);
+  if (client.user) {
+    token = client.token
+  }
+  t.is(client && client.user.email, config.user);
+});
+
+
+test("login from storage", async (t) => {
+  const client = await auth.getClient(token);
+  t.is(client.user && client.user.email, config.user);
+})
 
 test('register', async (t) => {
   const loginData = await auth.signup({
@@ -33,6 +47,4 @@ test('register', async (t) => {
     } else {
       t.is(typeof loginData.token, 'string');
   }
-
 })
-

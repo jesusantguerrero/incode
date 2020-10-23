@@ -1,79 +1,47 @@
 /* eslint-disable functional/prefer-readonly-type */
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/no-class */
-import Axios, { AxiosInstance, AxiosPromise } from "axios";
+import Axios, { AxiosInstance, AxiosPromise } from 'axios';
 
-import { Auth } from "../auth/auth";
+import { Auth } from '../auth/auth';
+import { BaseAPI } from '../shared/BaseAPI';
 
 type User = {
-    firstname: string;
-    email: string
-}
+  firstname: string;
+  email: string;
+};
 
-export class Client {
-  $http: AxiosInstance;
-  user: User
+export class Client extends BaseAPI {
+  user: User;
+  token: string;
+  // APIS
+  // 1-users
+  // 2-companies
+  // 3-apps
+  // 4-plans
+  // 5-notifications
+  // 6-filesystem
+  // 7-
 
-
-  constructor(token: string, endpoint: string) {
-    this.$http = Axios.create({
-      baseURL: endpoint,
-      headers: {
-        Authorization: token
-      }
+  constructor(token: string, auth: Auth) {
+    super({
+      baseURL: auth.baseURL,
+      token: token
     })
-  };
+    this.token = token;
+  }
 
   static create(token: string, auth: Auth): Client {
-    return new Client(token, auth.endpoint)
-  }
-
-  static getSettings(auth: Auth): AxiosPromise {
-    return auth.$http({
-      url: `/app/${auth.appKey}/settings`
-    })
-  }
-
-
-  getCompanies() {
-    return this.$http({
-      url: 'companies'
-    })
+    return new Client(token, auth);
   }
 
   getUser(): Promise<User> {
     return this.$http({
-      url: 'users/0'
+      url: 'users/0',
     }).then(({ data }) => {
       // eslint-disable-next-line functional/immutable-data
-      this.user = data
-      return data
-    })
-
+      this.user = data;
+      return data;
+    });
   }
-
-  getMenu(menuName = 'main'): AxiosPromise {
-    return this.$http({
-      url: `/menus/${menuName}`
-    })
-  }
-
-  getApps(): AxiosPromise {
-    return this.$http({
-      url: `/apps`
-    })
-  }
-
-  getPlans(): AxiosPromise {
-    return this.$http({
-      url: `/app-plans`
-    })
-  }
-
-  getNotifications(): AxiosPromise {
-    return this.$http({
-      url: `/notifications`
-    })
-  }
-
 }

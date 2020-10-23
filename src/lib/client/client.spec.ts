@@ -7,17 +7,18 @@ import { Client } from '../client/client';
 let auth: Auth;
 
 test.beforeEach(() => {
-  auth = new Auth(config.endpoint, config.apikey);
+  auth = new Auth({
+    endpoint: config.apps.GEWAER_API,
+    appKey: config.apikey
+  });
 })
 
 test('get user', async (t) => {
-  const loginData = await auth.login(config.user, config.password).catch(err => {
+  const client = await auth.login(config.user, config.password).catch(err => {
     console.log(err.statusText)
   })
 
-  const client = loginData && Client.create(loginData.token, auth);
-  const user = await client.getUser()
-  console.log(client.user.email);
+  const user = client && await client.getUser()
 
   t.is(user && user.email, config.user);
 });
