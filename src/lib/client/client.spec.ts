@@ -3,7 +3,6 @@ import test from 'ava';
 
 import config from "../../config";
 import { Auth } from '../auth/auth';
-import { Client } from '../client/client';
 let auth: Auth;
 
 test.beforeEach(() => {

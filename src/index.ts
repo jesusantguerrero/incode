@@ -1,3 +1,4 @@
+/* eslint-disable functional/prefer-readonly-type */
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/no-class */
 import { Auth } from './lib/auth/auth';
@@ -10,14 +11,25 @@ type AuthConfig = {
 };
 
 export default class ClientSDK extends BaseAPI {
+  // Unauthenticated API
   public readonly auth: Auth;
   public readonly settings: any;
-  public readonly client: Client;
+  // Authenticated APIS
+  public client: Client;
 
   constructor(config: AuthConfig) {
     super({
       baseURL: config.endpoint
     })
-    this.auth = new Auth(config);
+    // props
+    this.auth = new Auth(config, this.emitter);
+
+    // Events
+    this.emitter.on('logged', (client) => {
+      this.client = client;
+    })
+    this.emitter.on('logout', () => {
+      this.client = null;
+    })
   }
 }

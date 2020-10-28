@@ -2,7 +2,8 @@
 /* eslint-disable functional/prefer-readonly-type */
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/no-class */
-import Axios, { AxiosInstance, AxiosPromise } from 'axios';
+import { AxiosInstance, AxiosPromise } from 'axios';
+import { Emitter } from 'mitt';
 import qs from 'qs';
 
 import { Client } from '../client/client';
@@ -47,11 +48,12 @@ export class Auth extends BaseAPI {
     tokenName: 'incode::token',
   };
 
-  constructor(authConfig: AuthConfig) {
+  constructor(authConfig: AuthConfig, emitter?: Emitter) {
     super({
       baseURL: authConfig.endpoint
     })
     this.appKey = authConfig.appKey;
+    this.emitter = emitter
   }
 
   login(email: string, password: string): Promise<Client> {
@@ -66,6 +68,7 @@ export class Auth extends BaseAPI {
       this.setToken(data.token);
       const client = Client.create(data.token, this);
       await client.getUser()
+      this.emit('logged', client)
       return client;
     });
   }
@@ -103,9 +106,13 @@ export class Auth extends BaseAPI {
   logout(): AxiosPromise {
     return this.$http({
       url: '/auth/logout',
-      method: 'POST',
+      method: 'PUT',
+      headers: {
+        Authorization: this.token
+      }
     }).then((res) => {
       this.setToken(null);
+      this.emit('logout');
       return res;
     });
   }

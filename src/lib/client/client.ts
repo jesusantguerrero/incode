@@ -1,8 +1,6 @@
 /* eslint-disable functional/prefer-readonly-type */
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/no-class */
-import Axios, { AxiosInstance, AxiosPromise } from 'axios';
-
 import { Auth } from '../auth/auth';
 import { BaseAPI } from '../shared/BaseAPI';
 
